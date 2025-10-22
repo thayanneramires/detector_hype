@@ -306,7 +306,9 @@ def fetch_google_trends(term, time_period, geo):
     :return: Um dicionário contendo DataFrames ou uma chave 'error'.
     """
     try:
-        pytrends = TrendReq(hl='pt-BR', tz=360)
+        # AJUSTE: Adiciona retries=3 e backoff_factor=1 para lidar com erros 429
+        pytrends = TrendReq(hl='pt-BR', tz=360, retries=3, backoff_factor=1)
+        
         keywords = [term]
         pytrends.build_payload(keywords, cat=0, timeframe=time_period, geo=geo, gprop='')
         time.sleep(1)  # Pequena pausa para evitar rate limit
@@ -587,6 +589,9 @@ def main():
         if time_value == 'today 3-m' and trends_results_ihp:
              trends_results_display = trends_results_ihp
         else:
+             # AJUSTE: Adiciona uma pausa de 2 segundos antes da segunda chamada de API
+             # para evitar o erro 429 (Too Many Requests)
+             time.sleep(2)
              trends_results_display = fetch_google_trends(search_term, time_value, geo_value)
         
         trends_df_time_display = trends_results_display.get('df_time') if isinstance(trends_results_display, dict) else None
@@ -861,4 +866,3 @@ if __name__ == "__main__":
                 #file_name=f'trends_interest_series_{search_term}.csv',
                 #mime='text/csv',
                 #key='download-trends-series-v2' )
-            
