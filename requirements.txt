@@ -1,0 +1,10 @@
+streamlit 
+requests
+math
+pandas
+plotly.express
+pytrends.request
+datetime 
+time
+base64
+io
